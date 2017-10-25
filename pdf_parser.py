@@ -28,16 +28,20 @@ class pdf_parser:
         node_line_list=self.get_line_list(self.root)
         for node_line in node_line_list:
             line_point=self.get_point(node_line)
-            line_pdf_list=pdf_list(point)
+            line_pdf_list=pdf_list(line_point)
             node_format_list=self.get_formatting_list(node_line)
             for node_format in node_format_list:
-                node_charParams=self.get_charParams_list(node_format)
-                text_point=self.get_point(node_charParams)
-                text=self.get_charRec_text(node_charParams)
-                size=node_charParams.get('meanStrokeWidth')
-                xmler=pdf_xmler(text_point,text,size)
-                line_pdf_list.extend(xmler)
-            xml_list.extend(line_pdf_list)
+                node_charParams_list=self.get_charParams_list(node_format)
+                for node_charParams in  node_charParams_list:
+                     text_point=self.get_point(node_charParams)
+                     text=self.get_charRec_text(node_charParams)
+                     if text!=None:
+                         size=node_charParams.get('meanStrokeWidth')
+                         xmler=pdf_xmler(text_point,text,size)
+                         line_pdf_list.append(xmler)
+                         #print(text)
+            self.xml_list.append(line_pdf_list)
+
 
 
     def get_point(self,node_line):
@@ -49,16 +53,25 @@ class pdf_parser:
 
 
     def get_line_list(self,father_node):
-        return father_node.iter(tag_forward+tag_line)
+        if father_node!=None:
+            return father_node.iter(tag_forward+tag_line)
 
     def get_formatting_list(self,father_node):
-        return father_node.findall(tag_forward+tag_formatting)
+        if father_node!=None:
+            return father_node.findall(tag_forward+tag_formatting)
 
     def get_charParams_list(self,father_node):
-        return father_node.findall(tag_forward+tag_charParams)
+        if father_node!=None:
+            return father_node.findall(tag_forward+tag_charParams)
 
     def get_charRec_text(self,father_node):
-        return father_node.finda(tag_forward+tag_charParams).find(tag_forward+tag_charRec).text
+        if father_node!=None:
+            node_charRecs=father_node.find(tag_forward+tag_charRecs);
+            if node_charRecs!=None:
+                node_charRec=node_charRecs.find(tag_forward+tag_charRec)
+                if node_charRec!=None:
+                    return node_charRec.text
+        return None
 
 
 

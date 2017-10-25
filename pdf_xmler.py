@@ -7,7 +7,7 @@
 #single char text
 class pdf_xmler:
      def __init__(self,point,char,size):
-         self.point=right
+         self.point=point
          self.size=size
          self.char=char
 
