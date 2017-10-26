@@ -7,12 +7,16 @@
 from pdf_xmler import pdf_xmler
 from pdf_xmler import point
 from pdf_xmler import pdf_list
+from pdf_xmler import block
 import xml.etree.ElementTree as ET
 
 
 #define  xml tag
 tag_forward='{http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml}'
 tag_formatting='formatting'
+tag_page='page'
+tag_height='height'
+tag_width='width'
 tag_charParams='charParams'
 tag_charRecs='charRecVariants'
 tag_charRec='charRecVariant'
@@ -21,8 +25,17 @@ class pdf_parser:
     def __init__(self,xml_path):
         self.root=ET.parse(xml_path).getroot()
         self.xml_list=[]
+        self.block_list=[]
+        self.size_width=0
+        self.size_height=0
+        self.init_size()
         self.init_pdf_xmler()
+        self.deal_line_to_block()
 
+    def init_size(self):
+        pagenode=self.root.find(tag_forward+tag_page)
+        self.size_width=int(pagenode.get(tag_height))
+        self.size_height=int(pagenode.get(tag_width))
 
     def init_pdf_xmler(self):
         node_line_list=self.get_line_list(self.root)
@@ -42,6 +55,12 @@ class pdf_parser:
                          #print(text)
             self.xml_list.append(line_pdf_list)
 
+
+    def deal_line_to_block(self):
+        for line in self.xml_list:
+            line_block=block(line)
+            for block_node in line_block.block_list:
+                self.block_list.append(block_node)
 
 
     def get_point(self,node_line):
