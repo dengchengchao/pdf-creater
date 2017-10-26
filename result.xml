@@ -61,15 +61,15 @@
 </variantText>
 </wordRecVariant>
 </wordRecVariants>
-<charParams l="462" t="317" r="494" b="352" wordFirst="1" wordLeftMost="1" wordFromDictionary="0" wordNormal="1" wordNumeric="0" wordIdentifier="0" charConfidence="78" serifProbability="255" wordPenalty="0" meanStrokeWidth="39">
+<charParams l="562" t="317" r="594" b="352" wordFirst="1" wordLeftMost="1" wordFromDictionary="0" wordNormal="1" wordNumeric="0" wordIdentifier="0" charConfidence="78" serifProbability="255" wordPenalty="0" meanStrokeWidth="39">
 <charRecVariants>
 <charRecVariant charConfidence="78" serifProbability="255">判</charRecVariant>
 </charRecVariants>判</charParams>
-<charParams l="505" t="317" r="533" b="353" wordFromDictionary="0" wordNormal="1" wordNumeric="0" wordIdentifier="0" charConfidence="73" serifProbability="255" wordPenalty="0" meanStrokeWidth="39">
+<charParams l="605" t="317" r="633" b="353" wordFromDictionary="0" wordNormal="1" wordNumeric="0" wordIdentifier="0" charConfidence="73" serifProbability="255" wordPenalty="0" meanStrokeWidth="39">
 <charRecVariants>
 <charRecVariant charConfidence="73" serifProbability="255">员</charRecVariant>
 </charRecVariants>员</charParams>
-<charParams l="544" t="333" r="551" b="350" suspicious="1" wordFromDictionary="0" wordNormal="1" wordNumeric="0" wordIdentifier="0" charConfidence="99" serifProbability="255" wordPenalty="0" meanStrokeWidth="39">
+<charParams l="644" t="333" r="651" b="350" suspicious="1" wordFromDictionary="0" wordNormal="1" wordNumeric="0" wordIdentifier="0" charConfidence="99" serifProbability="255" wordPenalty="0" meanStrokeWidth="39">
 <charRecVariants>
 <charRecVariant charConfidence="99" serifProbability="255">：</charRecVariant>
 </charRecVariants>：</charParams></formatting></line></par>
