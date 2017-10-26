@@ -34,8 +34,8 @@ class pdf_parser:
 
     def init_size(self):
         pagenode=self.root.find(tag_forward+tag_page)
-        self.size_width=int(pagenode.get(tag_height))
-        self.size_height=int(pagenode.get(tag_width))
+        self.size_width=int(pagenode.get(tag_width))
+        self.size_height=int(pagenode.get(tag_height))
 
     def init_pdf_xmler(self):
         node_line_list=self.get_line_list(self.root)

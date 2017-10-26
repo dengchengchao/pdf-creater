@@ -23,7 +23,7 @@ class xml2pdf:
             for  char in block:
               line_char+=char.char
             self.draw_text(line_char,canva,block[0].size,block.line_point)
-        canva.drawImage(self.image_path)
+        canva.drawImage(self.image_path,0,0)
         canva.showPage()
         canva.save()
 
@@ -32,7 +32,7 @@ class xml2pdf:
         canva.setFont('myFont',size)
         canva.drawString(point.left,self.get_height(point.top),text)
     def get_height(self,height):
-        return self.page_height-height
-xml2pdf("1.jpg",'result.xml','result.pdf').xml2pdf()
+        return self.page_height-height-25
+xml2pdf("result.jpg",'result.xml','result.pdf').xml2pdf()
 
 
