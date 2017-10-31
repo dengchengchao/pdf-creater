@@ -15,9 +15,10 @@ class pdf_xmler:
 
 #single line text
 class pdf_list(list):
-    def __init__(self,line_point):
+    def __init__(self,line_point,char_space):
          list.__init__([])
          self.line_point=line_point
+         self.char_space=char_space
 
 
 
@@ -37,7 +38,8 @@ class block:
          self.split_block()
 
      def split_block(self):
-        block=pdf_list(self.line_list[0].point)
+        block_char_space=self.get_char_space(0)
+        block=pdf_list(self.line_list[0].point,block_char_space )
         block.append(self.line_list[0])
         for index in range(1,len(self.line_list)):
            if(self.line_list[index].point.left-self.line_list[index-1].point.right<self.line_list[index].size):
@@ -46,8 +48,13 @@ class block:
            else:
                   self.block_list.append(copy.deepcopy(block))
                   block.clear()
-                  block=pdf_list(self.line_list[index].point)
+                  block_char_space=self.get_char_space(index)
+                  block=pdf_list(self.line_list[index].point,block_char_space)
                   block.append(self.line_list[index])
-                  print(1)
         self.block_list.append(copy.deepcopy(block))
 
+     def get_char_space(self,index):
+         block_char_space=10
+         if(len(self.line_list)>index+2):
+            block_char_space=self.line_list[index+1].point.left-self.line_list[index].point.right
+         return block_char_space 

@@ -4,54 +4,27 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph
+from reportlab import platypus
+from reportlab.lib.styles import getSampleStyleSheet
+
+from reportlab.platypus import SimpleDocTemplate,Paragraph,Spacer,Table,TableStyle
+
 pdfmetrics.registerFont(TTFont('myFont','/usr/share/fonts/truetype/wqy/wqy-microhei.ttc'))
 def hello():
-    c=canvas.Canvas("helloword.pdf",pagesize=(2603,3593))
-    c.setFont('myFont',57)
-    c.translate(0,0)
-    c.drawCentredString(779,407,"中国一直是我的家")
-
-
-    c.showPage()
-    c.save()
+   c=canvas.Canvas("helloword.pdf")
+   obj=c.beginText()
+   obj.setTextOrigin(0,0)
+   obj.setFont('myFont',20)
+   obj.setCharSpace(5)
+   obj.textLines("cc")
+   c.drawText(obj)
+   obj=c.beginText()
+   obj.setTextOrigin(0,0)
+   obj.setFont('myFont',20)
+   obj.setCharSpace(10)
+   obj.textLines("dd")
+   c.drawText(obj)
+   c.showPage()
+   c.save()
 hello()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

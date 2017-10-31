@@ -41,7 +41,7 @@ class pdf_parser:
         node_line_list=self.get_line_list(self.root)
         for node_line in node_line_list:
             line_point=self.get_point(node_line)
-            line_pdf_list=pdf_list(line_point)
+            line_pdf_list=pdf_list(line_point,10)
             node_format_list=self.get_formatting_list(node_line)
             for node_format in node_format_list:
                 node_charParams_list=self.get_charParams_list(node_format)
