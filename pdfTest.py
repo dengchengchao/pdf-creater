@@ -20,8 +20,8 @@ def draw_Text(c,space):
    c.drawText(obj)
    obj=c.beginText()
    obj.setTextOrigin(50,0)
-   obj.setFont('myFont',23)
-   obj.setCharSpace(10)
+   obj.setFont('myFont',40)
+   obj.setCharSpace(32)
    obj.textLines("测一测中国的一个是吧")
    c.drawText(obj)
  
