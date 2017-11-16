@@ -31,7 +31,7 @@ class xml2pdf:
                  self.draw_text(canva,block[index],block[index-1])
               else:
                  self.forward_char=copy.deepcopy(block[0])
-       #canva.drawImage(self.image_path,0,0)
+        canva.drawImage(self.image_path,0,0)
         canva.showPage()
         canva.save()
 
