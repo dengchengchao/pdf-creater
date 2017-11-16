@@ -11,20 +11,26 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate,Paragraph,Spacer,Table,TableStyle
 
 pdfmetrics.registerFont(TTFont('myFont','/usr/share/fonts/truetype/wqy/wqy-microhei.ttc'))
+def draw_Text(c,space):
+   obj=c.beginText()
+   obj.setTextOrigin(0,0)
+   obj.setFont('myFont',20)
+   obj.setCharSpace(space)
+   obj.textLines("测一测")
+   c.drawText(obj)
+   obj=c.beginText()
+   obj.setTextOrigin(50,0)
+   obj.setFont('myFont',23)
+   obj.setCharSpace(space)
+   obj.textLines("测一测中国的一个是吧")
+   c.drawText(obj)
+ 
+    
+
 def hello():
    c=canvas.Canvas("helloword.pdf")
-   obj=c.beginText()
-   obj.setTextOrigin(0,0)
-   obj.setFont('myFont',20)
-   obj.setCharSpace(5)
-   obj.textLines("cc")
-   c.drawText(obj)
-   obj=c.beginText()
-   obj.setTextOrigin(0,0)
-   obj.setFont('myFont',20)
-   obj.setCharSpace(10)
-   obj.textLines("dd")
-   c.drawText(obj)
+   draw_Text(c,5)
+  # draw_Text(c,50)
    c.showPage()
    c.save()
 hello()
