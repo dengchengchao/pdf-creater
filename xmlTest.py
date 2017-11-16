@@ -1,12 +1,9 @@
 import xml.etree.ElementTree as ET
 tag_forward='{http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml}'
 root=ET.parse('result.xml').getroot()
-
-def printf(node):
-    print(node.get('b'))
 line=root.iter(tag_forward+'line')
 for node in line:
-    printf(node)
+   print node.get('b')
     #node2=node.findall(tag_forward+'formatting')
     #for node3 in node2:
        # for node4 in node3:
@@ -14,5 +11,3 @@ for node in line:
            #for node6 in node5:
                #for node7 in node6.find(tag_forward+'charRecVariants').findall(tag_forward+'charRecVariant'):
                    #print(node7.text)
-
-
