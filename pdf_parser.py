@@ -4,10 +4,10 @@
 '''
      Parsing XML files to generate pdf_xmler object
 '''
-from pdf_xmler import pdf_xmler
-from pdf_xmler import point
-from pdf_xmler import pdf_list
-from pdf_xmler import block
+from pdf_char import pdf_char
+from pdf_char import point
+from pdf_char import pdf_char_line
+from pdf_char import block
 import xml.etree.ElementTree as ET
 
 
@@ -41,7 +41,7 @@ class pdf_parser:
         node_line_list=self.get_line_list(self.root)
         for node_line in node_line_list:
             line_point=self.get_point(node_line)
-            line_pdf_list=pdf_list(line_point,10)
+            line_pdf_list=pdf_char_line(line_point, 10)
             node_format_list=self.get_formatting_list(node_line)
             for node_format in node_format_list:
                 node_charParams_list=self.get_charParams_list(node_format)
@@ -50,7 +50,7 @@ class pdf_parser:
                      text=self.get_charRec_text(node_charParams)
                      if text!=None:
                          size=node_charParams.get('meanStrokeWidth')
-                         xmler=pdf_xmler(text_point,text,size)
+                         xmler=pdf_char(text_point, text, size)
                          line_pdf_list.append(xmler)
                          #print(text)
             self.xml_list.append(line_pdf_list)
