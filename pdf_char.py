@@ -34,6 +34,8 @@ class pdf_char_line(list):
         self.char_space = char_space
         self.char_size=0
         self.char_line=''
+        self.last_point=0
+
 
 # struct point
 class point:
@@ -78,7 +80,8 @@ class block:
         dis_argv = self.get_char_space_by_total(block, char_size)
         block.char_size=char_size
         block.char_space=dis_argv
-        block.line_point=block[0].point
+        block.line_point=point(block[0].point.top,self.get_block_bottom(block), block[0].point.left, block[0].point.right)
+        block.last_point=self.get_block_last_point(block)
         self.block_list.append(copy.deepcopy(block))
 
     def init_block(self, list_index):
@@ -88,7 +91,7 @@ class block:
         return block
 
     # 计算字间距
-    # 第一种方法：每个字间距的平均数
+    # 第一种方法：每个字间距的平均数(暂时没有采用)
     def get_char_space_by_each(self, block):
         if (len(block) < 2): return 0
         list_distant = []
@@ -106,15 +109,38 @@ class block:
         block_len=len(block)
         if (block_len < 1): return 0
         block_distance=block[block_len-1].point.right-block[0].point.left
+        #print("char_space %s"%str((block_distance-block_len*size)/block_len))
+        #print(block.char_line, str(int((block_distance-block_len*size)/block_len)))
         return int((block_distance-block_len*size)/block_len)
 
-    # 计算所有字体大小的平均数
+    # 计算字体大小
     # 字体大小取Max(r-l,b-t)
     def get_char_size(self,block):
         if(len(block)<1):return 0
         list_size=[]
         for char in block:
-            if(tools.is_punctuation(char.text)):continue
+            print(char.text,str(char.point.bottom-char.point.top),str(char.point.right-char.point.left),str(char.size))
+            if(tools.is_digit(char.text)):
+                print()
+                continue
+            if(tools.is_punctuation(char.text)):
+                list_size.append(char.size)
+                continue
+            #ABBYY的字体大小计算不准确
             list_size.append(char.point.max)
+            #list_size.append(char.size)
         return tools.get_average(list_size)
 
+    def get_block_bottom(self, block):
+        list_bottom=[]
+        for char in block:
+            if (tools.is_punctuation(char.text)):continue
+            list_bottom.append(char.point.bottom)
+        return  tools.get_average(list_bottom)
+
+    def get_block_last_point(self,block):
+        length=len(block)
+        if(tools.is_punctuation(block[length-1].text)):
+            return block[length-1].point.left+block.char_size
+        else:
+            return block[length-1].point.right

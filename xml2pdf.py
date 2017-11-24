@@ -58,15 +58,20 @@ class xml2pdf:
     def init_text_object(self,block,canva):
         text_obj = canva.beginText()
         text_obj.setFont(_FONT_NAME_, block.char_size)
-        text_obj.setCharSpace(block.char_space)
+        #text_obj.setCharSpace(block.char_space)
+        #消除标点符号的影响
+        text_obj.setHorizScale(
+            100 * (block.last_point - block[0].point.left) / canva.stringWidth(
+                block.char_line, _FONT_NAME_, block.char_size))
         text_obj.setTextOrigin(block.line_point.left, self.page_height - block.line_point.bottom)
         text_obj.textLine(block.char_line)
         self.log_info("""
-                      block info: 
+                      [block info]: 
                       text :%s
-                      char_siez：%s
+                      char_size：%s
                       point:%s,%s
-                      """%(block.char_line ,str(block.char_size) ,str(block.line_point.left) ,str(self.page_height - block.line_point.bottom)))
+                      char_space:%s
+                      """%(block.char_line ,str(block.char_size) ,str(block.line_point.left) ,str(self.page_height - block.line_point.bottom),block.char_space))
         return text_obj
 
     #通用信息记录
