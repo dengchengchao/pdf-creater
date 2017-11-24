@@ -52,7 +52,6 @@ class pdf_parser:
                          size=node_charParams.get('meanStrokeWidth')
                          xmler=pdf_char(text_point, text, size)
                          line_pdf_list.append(xmler)
-                         #print(text)
             self.xml_list.append(line_pdf_list)
 
 

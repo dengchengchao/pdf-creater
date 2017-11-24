@@ -33,6 +33,7 @@ class pdf_char_line(list):
         self.line_point = line_point
         self.char_space = char_space
         self.char_size=0
+        self.char_line=''
 
 # struct point
 class point:
@@ -66,6 +67,7 @@ class block:
             if ((self.line_list[index].point.left - self.line_list[index - 1].point.right) < self.line_list[
                 index].size):
                 block.append(self.line_list[index])
+                block.char_line+=self.line_list[index].text
             else:
                 self.add_to_block_list(block)
                 block = self.init_block(0)
@@ -82,6 +84,7 @@ class block:
     def init_block(self, list_index):
         block = pdf_char_line(self.line_list[list_index].point)
         block.append(self.line_list[list_index])
+        block.char_line += self.line_list[list_index].text
         return block
 
     # 计算字间距
