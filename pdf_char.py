@@ -63,18 +63,30 @@ class block:
         self.split_block()
 
     def split_block(self):
-        block = self.init_block(0)
-        for index in range(1, len(self.line_list)):
+        is_block_begin=True
+        for index in range(0, len(self.line_list)):
+            # 处理标点符号
+            if  tools.is_punctuation(self.line_list[index].text) or tools.is_digit(self.line_list[index].text) :
+                if is_block_begin==False:
+                  self.add_to_block_list(block)
+                block = self.init_block(index)
+                self.add_to_block_list(block)
+                is_block_begin = True
+            # 初始化block
+            elif (is_block_begin):
+                block = self.init_block(index)
+                is_block_begin = False
             # 如果相邻两个汉字的字间距小于这个字的大小，则认为这个字是同一个块
-            if ((self.line_list[index].point.left - self.line_list[index - 1].point.right) < self.line_list[
+            elif((block[len(block)-1].point.left - self.line_list[index - 1].point.right) < self.line_list[
                 index].size):
                 block.append(self.line_list[index])
                 block.char_line+=self.line_list[index].text
             else:
                 self.add_to_block_list(block)
-                block = self.init_block(0)
+                is_block_begin=True
         self.add_to_block_list(block)
 
+    #计算block的各种信息
     def add_to_block_list(self,block):
         char_size = self.get_char_size(block)
         dis_argv = self.get_char_space_by_total(block, char_size)
@@ -87,7 +99,7 @@ class block:
     def init_block(self, list_index):
         block = pdf_char_line(self.line_list[list_index].point)
         block.append(self.line_list[list_index])
-        block.char_line += self.line_list[list_index].text
+        block.char_line= self.line_list[list_index].text
         return block
 
     # 计算字间距
@@ -120,10 +132,7 @@ class block:
         list_size=[]
         for char in block:
             print(char.text,str(char.point.bottom-char.point.top),str(char.point.right-char.point.left),str(char.size))
-            if(tools.is_digit(char.text)):
-                print()
-                continue
-            if(tools.is_punctuation(char.text)):
+            if(tools.is_punctuation(char.text)or tools.is_digit(char.text)):
                 list_size.append(char.size)
                 continue
             #ABBYY的字体大小计算不准确
@@ -131,16 +140,20 @@ class block:
             #list_size.append(char.size)
         return tools.get_average(list_size)
 
+    #计算平均坐标
     def get_block_bottom(self, block):
         list_bottom=[]
         for char in block:
-            if (tools.is_punctuation(char.text)):continue
-            list_bottom.append(char.point.bottom)
+            if (tools.is_punctuation(char.text)):
+                list_bottom.append(char.point.top)
+            else:
+                list_bottom.append(char.point.bottom+(char.point.max-(char.point.bottom-char.point.top))/2)
+
         return  tools.get_average(list_bottom)
 
     def get_block_last_point(self,block):
         length=len(block)
         if(tools.is_punctuation(block[length-1].text)):
-            return block[length-1].point.left+block.char_size
+           return block[length-1].point.left+block.char_size
         else:
-            return block[length-1].point.right
+           return block[length-1].point.right

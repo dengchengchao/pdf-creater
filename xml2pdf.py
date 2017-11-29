@@ -28,22 +28,22 @@ class xml2pdf:
         :param xml_path: xml文件的路径
         :param pdf_path:生成的pdf路劲
         '''
-        try:
-            self.parser=pdf_parser(xml_path)
-            self.log_info("parsing")
-            self.image_path=image_path
-            self.pdf_path=pdf_path
-            self.page_height=self.parser.size_height
-            self.log_info("image height：%s"%(self.page_height))
-            self.page_width=self.parser.size_width
-            self.log_info("image width：%s"%(self.page_width))
-        except BaseException as e :
-            self.log_error(e)
+        #try:
+        self.parser=pdf_parser(xml_path)
+        self.log_info("parsing")
+        self.image_path=image_path
+        self.pdf_path=pdf_path
+        self.page_height=self.parser.size_height
+        self.log_info("image height：%s"%(self.page_height))
+        self.page_width=self.parser.size_width
+        self.log_info("image width：%s"%(self.page_width))
+        #except BaseException as e :
+        #   self.log_error(e)
 
 
 
     def xml2pdf(self):
-        try:
+        #try:
             canva=canvas.Canvas(self.pdf_path,pagesize=(self.page_width,self.page_height))
             for block in self.parser.block_list:
                  text_obj=self.init_text_object(block,canva)
@@ -51,8 +51,8 @@ class xml2pdf:
             canva.drawImage(self.image_path,0,0)
             canva.showPage()
             canva.save()
-        except BaseException as e :
-            self.log_error(e)
+        #except BaseException as e :
+           #self.log_error(e)
 
 
     def init_text_object(self,block,canva):
