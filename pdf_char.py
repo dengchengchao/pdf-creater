@@ -7,6 +7,7 @@
 '''
 import copy
 import tools
+import define
 
 # single text text
 class pdf_char:
@@ -21,7 +22,6 @@ class pdf_char_line(list):
     '''
        存储字体大小、字间距相差不大并且连载一起的对象。用于连续的绘画文字
     '''
-
     def __init__(self, line_point, char_space):
         self.init(line_point, char_space)
 
@@ -35,6 +35,7 @@ class pdf_char_line(list):
         self.char_size=0
         self.char_line=''
         self.last_point=0
+        self.property=''
 
 
 # struct point
@@ -64,18 +65,36 @@ class block:
 
     def split_block(self):
         is_block_begin=True
+        last_is_digit=False
         for index in range(0, len(self.line_list)):
-            # 处理标点符号
-            if  tools.is_punctuation(self.line_list[index].text) or tools.is_digit(self.line_list[index].text) :
-                if is_block_begin==False:
-                  self.add_to_block_list(block)
-                block = self.init_block(index)
-                self.add_to_block_list(block)
-                is_block_begin = True
+            if(tools.is_digit(self.line_list[index].text)):
+               if not is_block_begin:
+                   self.add_to_block_list(block)
+                   is_block_begin = True
+               if not last_is_digit:
+                   block = self.init_block(index)
+               else:
+                   block.append(self.line_list[index])
+                   block.char_line += self.line_list[index].text
+               last_is_digit=True
+               continue
+            else:
+                if last_is_digit:
+                    block.property="digit"
+                    self.add_to_block_list(block)
+                    is_block_begin = True
+                last_is_digit=False
+
             # 初始化block
-            elif (is_block_begin):
+            if (is_block_begin):
                 block = self.init_block(index)
                 is_block_begin = False
+            # 处理标点符号
+            elif(tools.is_punctuation(self.line_list[index].text) ):
+                block.append(self.line_list[index])
+                block.char_line += self.line_list[index].text
+                self.add_to_block_list(block)
+                is_block_begin = True
             # 如果相邻两个汉字的字间距小于这个字的大小，则认为这个字是同一个块
             elif((block[len(block)-1].point.left - self.line_list[index - 1].point.right) < self.line_list[
                 index].size):
@@ -92,8 +111,9 @@ class block:
         dis_argv = self.get_char_space_by_total(block, char_size)
         block.char_size=char_size
         block.char_space=dis_argv
-        block.line_point=point(block[0].point.top,self.get_block_bottom(block), block[0].point.left, block[0].point.right)
         block.last_point=self.get_block_last_point(block)
+        block.line_point = point(block[0].point.top,self.get_block_bottom(block), block[0].point.left, block[0].point.right)
+        block.line_point.max=self.get_block_argv_max(block)
         self.block_list.append(copy.deepcopy(block))
 
     def init_block(self, list_index):
@@ -132,7 +152,7 @@ class block:
         list_size=[]
         for char in block:
             print(char.text,str(char.point.bottom-char.point.top),str(char.point.right-char.point.left),str(char.size))
-            if(tools.is_punctuation(char.text)or tools.is_digit(char.text)):
+            if(tools.is_punctuation(char.text)):
                 list_size.append(char.size)
                 continue
             #ABBYY的字体大小计算不准确
@@ -153,7 +173,15 @@ class block:
 
     def get_block_last_point(self,block):
         length=len(block)
-        if(tools.is_punctuation(block[length-1].text)):
+        if(tools.is_punctuation(block[length-1].text)or tools.is_digit(block[length-1].text)):
            return block[length-1].point.left+block.char_size
         else:
-           return block[length-1].point.right
+          return block[length-1].point.right
+
+
+    def get_block_argv_max(self,block):
+        list_bottom = []
+        for char in block:
+           list_bottom.append(char.point.max)
+        return tools.get_average(list_bottom)
+

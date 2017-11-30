@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 
 #define  xml tag
-tag_forward='{http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml}'
+tag_forward='{http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml}'#'{http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml}'
 tag_formatting='formatting'
 tag_page='page'
 tag_height='height'

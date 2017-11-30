@@ -45,8 +45,8 @@ class xml2pdf:
     def xml2pdf(self):
         #try:
             canva=canvas.Canvas(self.pdf_path,pagesize=(self.page_width,self.page_height))
-            for block in self.parser.block_list:
-                 text_obj=self.init_text_object(block,canva)
+            for index in range(0,len(self.parser.block_list)):
+                 text_obj=self.init_text_object(self.parser.block_list[index],canva,index)
                  canva.drawText(text_obj)
             canva.drawImage(self.image_path,0,0)
             canva.showPage()
@@ -55,23 +55,29 @@ class xml2pdf:
            #self.log_error(e)
 
 
-    def init_text_object(self,block,canva):
+    def init_text_object(self, draw_block, canva,index):
         text_obj = canva.beginText()
-        text_obj.setFont(_FONT_NAME_, block.char_size)
-        #text_obj.setCharSpace(block.char_space)
+        text_obj.setFont(_FONT_NAME_, draw_block.char_size)
+        #text_obj.setCharSpace(draw_block.char_space)
         #消除标点符号的影响
-        text_obj.setHorizScale(
-            100 * (block.last_point - block[0].point.left) / canva.stringWidth(
-                block.char_line, _FONT_NAME_, block.char_size))
-        text_obj.setTextOrigin(block.line_point.left, self.page_height - block.line_point.bottom)
-        text_obj.textLine(block.char_line)
+        if(index<len(self.parser.block_list)-1 and self.parser.block_list[index+1].property=="digit"):
+            text_obj.setHorizScale(
+                (100 * (draw_block.last_point - draw_block[0].point.left+self.parser.block_list[index+1].char_size/2) / canva.stringWidth(
+                    draw_block.char_line, _FONT_NAME_, draw_block.char_size)))
+        else:
+            text_obj.setHorizScale(
+                100 * (draw_block.last_point - draw_block[0].point.left) / canva.stringWidth(
+                    draw_block.char_line, _FONT_NAME_, draw_block.char_size))
+        text_obj.setTextOrigin(draw_block.line_point.left, self.page_height - draw_block.line_point.bottom)
+        text_obj.textLine(draw_block.char_line)
         self.log_info("""
-                      [block info]: 
+                      [draw_block info]: 
                       text :%s
                       char_size：%s
                       point:%s,%s
                       char_space:%s
-                      """%(block.char_line ,str(block.char_size) ,str(block.line_point.left) ,str(self.page_height - block.line_point.bottom),block.char_space))
+                      property:%s
+                      """ % (draw_block.char_line , str(draw_block.char_size) , str(draw_block.line_point.left) , str(self.page_height - draw_block.line_point.bottom), draw_block.char_space,draw_block.property))
         return text_obj
 
     #通用信息记录
@@ -86,7 +92,7 @@ class xml2pdf:
 
 log.setup_logging()
 start = time.clock()
-xml2pdf("result.jpg",'result.xml','result.pdf').xml2pdf()
+xml2pdf("C://Users//Citron//Desktop//pdf//result.jpg",'C://Users//Citron//Desktop//pdf//result.xml','C://Users//Citron//Desktop//pdf//result.pdf').xml2pdf()
 end = time.clock()
 logger = logging.getLogger(__name__)
 logger.info("success,run time：%s" % (end - start))
