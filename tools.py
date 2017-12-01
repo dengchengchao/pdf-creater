@@ -6,9 +6,7 @@ import string
 Some common  algorithms
 '''
 
-
-
-def is_punctuation(char,pun_list=":，、。？《》：！（）【】“”‘’；"+string.punctuation):
+def is_punctuation(char,pun_list=":，、。？：！“”‘’；"+string.punctuation):
     return char in pun_list
 
 def is_digit(char,digit_list="1234567890."):

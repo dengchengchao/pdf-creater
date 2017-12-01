@@ -33,7 +33,7 @@ class pdf_parser:
         self.deal_line_to_block()
 
     def init_size(self):
-        pagenode=self.root.find(tag_forward+tag_page)
+        pagenode=self.root.find(tag_page)
         self.size_width=int(pagenode.get(tag_width))
         self.size_height=int(pagenode.get(tag_height))
 
@@ -72,23 +72,21 @@ class pdf_parser:
 
     def get_line_list(self,father_node):
         if father_node!=None:
-            return father_node.iter(tag_forward+tag_line)
+            return father_node.iter(tag_line)
 
     def get_formatting_list(self,father_node):
         if father_node!=None:
-            return father_node.findall(tag_forward+tag_formatting)
+            return father_node.findall(tag_formatting)
 
     def get_charParams_list(self,father_node):
         if father_node!=None:
-            return father_node.findall(tag_forward+tag_charParams)
+            return father_node.findall(tag_charParams)
 
     def get_charRec_text(self,father_node):
         if father_node!=None:
-            node_charRecs=father_node.find(tag_forward+tag_charRecs);
-            if node_charRecs!=None:
-                node_charRec=node_charRecs.find(tag_forward+tag_charRec)
-                if node_charRec!=None:
-                    return node_charRec.text
+            node_charRecs=father_node.find(tag_charRecs)
+            if node_charRecs!=None and node_charRecs.tail.strip()!="":
+                return node_charRecs.tail.strip()
         return None
 
 

@@ -105,14 +105,18 @@ class block:
                 is_block_begin=True
         self.add_to_block_list(block)
 
+
+
+    #def split_kind_block(self,block):
+
+
     #计算block的各种信息
     def add_to_block_list(self,block):
         char_size = self.get_char_size(block)
-        dis_argv = self.get_char_space_by_total(block, char_size)
         block.char_size=char_size
-        block.char_space=dis_argv
         block.last_point=self.get_block_last_point(block)
         block.line_point = point(block[0].point.top,self.get_block_bottom(block), block[0].point.left, block[0].point.right)
+
         block.line_point.max=self.get_block_argv_max(block)
         self.block_list.append(copy.deepcopy(block))
 
@@ -122,42 +126,22 @@ class block:
         block.char_line= self.line_list[list_index].text
         return block
 
-    # 计算字间距
-    # 第一种方法：每个字间距的平均数(暂时没有采用)
-    def get_char_space_by_each(self, block):
-        if (len(block) < 2): return 0
-        list_distant = []
-        for index in range(1, len(block)):
-            #标点符号不做处理
-            if(tools.is_punctuation(block[index].text)):continue
-            if(tools.is_punctuation(block[index].text)):continue
-            distant = block[index].point.left - block[index - 1].point.right
-            list_distant.append(distant)
-        return tools.get_average(list_distant)
-
-    # 计算字间距
-    # 第二种方法:(总长度-字所占长度)/字间距
-    def get_char_space_by_total(self,block,size):
-        block_len=len(block)
-        if (block_len < 1): return 0
-        block_distance=block[block_len-1].point.right-block[0].point.left
-        #print("char_space %s"%str((block_distance-block_len*size)/block_len))
-        #print(block.char_line, str(int((block_distance-block_len*size)/block_len)))
-        return int((block_distance-block_len*size)/block_len)
-
     # 计算字体大小
     # 字体大小取Max(r-l,b-t)
     def get_char_size(self,block):
         if(len(block)<1):return 0
         list_size=[]
         for char in block:
-            print(char.text,str(char.point.bottom-char.point.top),str(char.point.right-char.point.left),str(char.size))
+
             if(tools.is_punctuation(char.text)):
-                list_size.append(char.size)
                 continue
             #ABBYY的字体大小计算不准确
             list_size.append(char.point.max)
-            #list_size.append(char.size)
+            print(char.text, str(char.point.bottom - char.point.top), str(char.point.right - char.point.left),
+                  str(char.size))
+        if(len(list_size)==0):
+            return  block[0].size
+        print(tools.get_average(list_size))
         return tools.get_average(list_size)
 
     #计算平均坐标

@@ -60,15 +60,16 @@ class xml2pdf:
         text_obj.setFont(_FONT_NAME_, draw_block.char_size)
         #text_obj.setCharSpace(draw_block.char_space)
         #消除标点符号的影响
-        if(index<len(self.parser.block_list)-1 and self.parser.block_list[index+1].property=="digit"):
-            text_obj.setHorizScale(
-                (100 * (draw_block.last_point - draw_block[0].point.left+self.parser.block_list[index+1].char_size/2) / canva.stringWidth(
-                    draw_block.char_line, _FONT_NAME_, draw_block.char_size)))
-        else:
-            text_obj.setHorizScale(
-                100 * (draw_block.last_point - draw_block[0].point.left) / canva.stringWidth(
-                    draw_block.char_line, _FONT_NAME_, draw_block.char_size))
+        # if(index<len(self.parser.block_list)-1 and self.parser.block_list[index+1].property=="digit"):
+        #     text_obj.setHorizScale(
+        #         (100 * (draw_block.last_point - draw_block[0].point.left+self.parser.block_list[index+1].char_size/2) / canva.stringWidth(
+        #             draw_block.char_line, _FONT_NAME_, draw_block.char_size)))
+        # else:
+        text_obj.setHorizScale(
+            100 * (draw_block.last_point - draw_block[0].point.left) / canva.stringWidth(
+                draw_block.char_line, _FONT_NAME_, draw_block.char_size))
         text_obj.setTextOrigin(draw_block.line_point.left, self.page_height - draw_block.line_point.bottom)
+        print("left:%s", draw_block[0].point.left)
         text_obj.textLine(draw_block.char_line)
         self.log_info("""
                       [draw_block info]: 
