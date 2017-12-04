@@ -8,6 +8,7 @@
 import copy
 import tools
 import define
+import split
 
 # single text text
 class pdf_char:
@@ -22,23 +23,16 @@ class pdf_char_line(list):
     '''
        存储字体大小、字间距相差不大并且连载一起的对象。用于连续的绘画文字
     '''
-    def __init__(self, line_point, char_space):
-        self.init(line_point, char_space)
-
-    def __init__(self, line_point,char_space=0):
-        self.init(line_point,char_space)
-
-    def init(self,line_point,char_space):
+    def __init__(self):
         list.__init__([])
-        self.line_point = line_point
-        self.char_space = char_space
+        self.begin_point=0
         self.char_size=0
         self.char_line=''
         self.last_point=0
         self.property=''
 
 
-# struct point
+
 class point:
     def __init__(self, top, bottom, left, right):
         self.top = int(top)
@@ -60,112 +54,125 @@ class block:
          :param line_list: 解析xml中line节点得到的原始line
          '''
         self.block_list = []
+        self.unclassified_block_list = []
         self.line_list = line_list
         self.split_block()
+        self.deal_unclassified_block_list()
+
 
     def split_block(self):
-        is_block_begin=True
-        last_is_digit=False
+        '''
+        根据字间距，找出逻辑上的一块
+        '''
+        is_block_begin = True
         for index in range(0, len(self.line_list)):
-            if(tools.is_digit(self.line_list[index].text)):
-               if not is_block_begin:
-                   self.add_to_block_list(block)
-                   is_block_begin = True
-               if not last_is_digit:
-                   block = self.init_block(index)
-               else:
-                   block.append(self.line_list[index])
-                   block.char_line += self.line_list[index].text
-               last_is_digit=True
-               continue
-            else:
-                if last_is_digit:
-                    block.property="digit"
-                    self.add_to_block_list(block)
-                    is_block_begin = True
-                last_is_digit=False
-
-            # 初始化block
-            if (is_block_begin):
-                block = self.init_block(index)
-                is_block_begin = False
-            # 处理标点符号
-            elif(tools.is_punctuation(self.line_list[index].text) ):
-                block.append(self.line_list[index])
-                block.char_line += self.line_list[index].text
-                self.add_to_block_list(block)
-                is_block_begin = True
             # 如果相邻两个汉字的字间距小于这个字的大小，则认为这个字是同一个块
-            elif((block[len(block)-1].point.left - self.line_list[index - 1].point.right) < self.line_list[
-                index].size):
+            if((self.line_list[index].point.left - self.line_list[index - 1].point.right) < self.get_line_list_max_size()):
+                if is_block_begin:
+                    block = pdf_char_line()
+                    is_block_begin = False
                 block.append(self.line_list[index])
                 block.char_line+=self.line_list[index].text
             else:
-                self.add_to_block_list(block)
-                is_block_begin=True
-        self.add_to_block_list(block)
+                 #self.add_to_block_list(block)
+                 self.unclassified_block_list.append(block)
+                 block = pdf_char_line()
+                 block.append(self.line_list[index])
+                 block.char_line += self.line_list[index].text
+                 is_block_begin = False
+        self.unclassified_block_list.append(block)
+
+
+    def get_line_list_max_size(self):
+        max_size=0
+        for char in self.line_list:
+            if char.point.max>max_size:
+                max_size=char.point.max
+        return max_size
 
 
 
-    #def split_kind_block(self,block):
+
+    def deal_unclassified_block_list(self):
+        for line_block in self.unclassified_block_list:
+            self.split_kind_block(line_block)
+
+    def split_kind_block(self,block_split):
+        '''
+        处理逻辑上的块。
+        标点符号、数字、字母、汉字等应该采用不同的方式绘画，
+        但是逻辑上应该连接到一块上
+        '''
+        last_is_digit = False
+        is_block_begin = True
+        if len(block_split)==0:return
+        for index in range(0, len(block_split)):
+           #处理数字
+           if(tools.is_digit(block_split[index].text)):
+               if not is_block_begin:
+                   self.add_chinese_to_block_list(block,index-1,block_split)
+                   is_block_begin = True
+               if not last_is_digit:
+                   block=self.init_block(block_split[index])
+                   #is_block_begin = False
+               block.append(block_split[index])
+               block.char_line += block_split[index].text
+               last_is_digit = True
+               if index==len(block_split)-1:
+                   self.add_chinese_to_block_list(block, index, block_split)
+               continue
+           else:
+               if last_is_digit:
+                    self.add_digit_to_block_list(block,index-1,block_split)
+                    is_block_begin = True
+               last_is_digit = False
+
+            # 处理标点符号
+           if (tools.is_punctuation(block_split[index].text)):
+                if not is_block_begin:
+                    block.append(block_split[index])
+                    block.char_line += block_split[index].text
+                    self.add_chinese_to_block_list(block, index, block_split)
+
+                else:
+                   block = self.init_block(block_split[index])
+                   block.append(block_split[index])
+                   block.char_line += block_split[index].text
+                   self.add_punctuation_to_block_list(block,index,block_split)
+                is_block_begin = True
+           else:
+               if (is_block_begin):
+                   block = self.init_block(block_split[index])
+                   is_block_begin = False
+               block.append(block_split[index])
+               block.char_line += block_split[index].text
+        if not is_block_begin:
+               self.add_chinese_to_block_list(block,index,block_split)
 
 
-    #计算block的各种信息
-    def add_to_block_list(self,block):
-        char_size = self.get_char_size(block)
-        block.char_size=char_size
-        block.last_point=self.get_block_last_point(block)
-        block.line_point = point(block[0].point.top,self.get_block_bottom(block), block[0].point.left, block[0].point.right)
+    def add_chinese_to_block_list(self,block,index,total_block):
+           chinese_block=split.default_split(block,index,total_block)
+           chinese_block.add_to_block_list(self.block_list)
 
-        block.line_point.max=self.get_block_argv_max(block)
-        self.block_list.append(copy.deepcopy(block))
 
-    def init_block(self, list_index):
-        block = pdf_char_line(self.line_list[list_index].point)
-        block.append(self.line_list[list_index])
-        block.char_line= self.line_list[list_index].text
+    def add_punctuation_to_block_list(self,block,index,total_block):
+        punctuation_block = split.punctuation_split(block, index, total_block)
+        punctuation_block.add_to_block_list(self.block_list)
+
+    def add_digit_to_block_list(self,block,index,total_block):
+        digit_block=split.digit_split(block,index,total_block)
+        digit_block.add_to_block_list(self.block_list)
+
+    def init_block(self, char):
+        block = pdf_char_line()
+        block.property=self.get_property(char.text)
         return block
 
-    # 计算字体大小
-    # 字体大小取Max(r-l,b-t)
-    def get_char_size(self,block):
-        if(len(block)<1):return 0
-        list_size=[]
-        for char in block:
 
-            if(tools.is_punctuation(char.text)):
-                continue
-            #ABBYY的字体大小计算不准确
-            list_size.append(char.point.max)
-            print(char.text, str(char.point.bottom - char.point.top), str(char.point.right - char.point.left),
-                  str(char.size))
-        if(len(list_size)==0):
-            return  block[0].size
-        print(tools.get_average(list_size))
-        return tools.get_average(list_size)
-
-    #计算平均坐标
-    def get_block_bottom(self, block):
-        list_bottom=[]
-        for char in block:
-            if (tools.is_punctuation(char.text)):
-                list_bottom.append(char.point.top)
-            else:
-                list_bottom.append(char.point.bottom+(char.point.max-(char.point.bottom-char.point.top))/2)
-
-        return  tools.get_average(list_bottom)
-
-    def get_block_last_point(self,block):
-        length=len(block)
-        if(tools.is_punctuation(block[length-1].text)or tools.is_digit(block[length-1].text)):
-           return block[length-1].point.left+block.char_size
-        else:
-          return block[length-1].point.right
+    def get_property(self,text):
+        if tools.is_punctuation(text): return  define.property_punctuation
+        if tools.is_digit(text):return  define.property_digit
+        return define.property_chinese
 
 
-    def get_block_argv_max(self,block):
-        list_bottom = []
-        for char in block:
-           list_bottom.append(char.point.max)
-        return tools.get_average(list_bottom)
 
