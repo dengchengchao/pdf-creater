@@ -70,4 +70,4 @@ class pdf_parser:
             for block_node in line_block.block_list:
                 self.block_list.append(block_node)
 
-pdf_parser(r"C:\Users\Citron\Desktop\pdf\result.xml")
+#pdf_parser(r"C:\Users\Citron\Desktop\pdf\result.xml")

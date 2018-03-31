@@ -28,7 +28,7 @@ handlers:
 
         formatter: simple
 
-        filename: log/info.log
+        filename: ./log/info.log
 
         maxBytes: 10485760 
 
@@ -44,7 +44,7 @@ handlers:
 
         formatter: simple
 
-        filename: log/errors.log
+        filename: ./log/xml2pdf_errors.log
 
         maxBytes: 10485760 
 
@@ -66,4 +66,4 @@ root:
 
     level: INFO
 
-    handlers: [ info_file_handler, error_file_handler]
+    handlers: [error_file_handler]

@@ -8,12 +8,13 @@ import yaml
 import os
 import logging.config
 import logging
-
-_LOG_DIR_NAME="log"
+import sys
+path = os.path.abspath(os.path.dirname(sys.argv[0]))
+_LOG_DIR_NAME="./log"
 def setup_logging(
-        default_path='log_config.yaml',
+        default_path=path+'/log_config.yaml',
         default_level=logging.INFO,
-        env_key='LOG_CFG'
+        env_key='LOG_CFG',
 ):
     '''
        Setup logging configuration
@@ -30,5 +31,7 @@ def setup_logging(
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
+    logging.filename="errors.log"
+
 
 

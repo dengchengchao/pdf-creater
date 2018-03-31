@@ -10,6 +10,9 @@ import tools
 import define
 import split
 
+
+__SPACE_MAX__=1.5
+
 # single text text
 class pdf_char:
     def __init__(self, point, text, size):
@@ -64,25 +67,20 @@ class block:
         '''
         根据字间距，找出逻辑上的一块
         '''
-        is_block_begin = True
+        block = pdf_char_line()
         for index in range(0, len(self.line_list)):
-            # 如果相邻两个汉字的字间距小于这个字的大小，则认为这个字是同一个块
-            if((self.line_list[index].point.left - self.line_list[index - 1].point.right) < self.get_line_list_max_size()):
-                if is_block_begin:
-                    block = pdf_char_line()
-                    is_block_begin = False
+            # 如果相邻两个汉字的字间距小于这个字的大小，则认为这个字是同一个块         
+            if((self.line_list[index].point.left - self.line_list[index - 1].point.right) < self.get_line_list_max_size()*__SPACE_MAX__):             
                 block.append(self.line_list[index])
                 block.char_line+=self.line_list[index].text
             else:
-                 #self.add_to_block_list(block)
+                 #self.add_to_block_list(block)			 
                  self.unclassified_block_list.append(block)
                  block = pdf_char_line()
                  block.append(self.line_list[index])
                  block.char_line += self.line_list[index].text
-                 is_block_begin = False
         self.unclassified_block_list.append(block)
-
-
+		
     def get_line_list_max_size(self):
         max_size=0
         for char in self.line_list:

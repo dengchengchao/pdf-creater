@@ -15,10 +15,12 @@ import logging
 import log
 import sys
 import os
+import xml.etree.ElementTree as ET
 
+path = os.path.abspath(os.path.dirname(sys.argv[0]))
 _FONT_NAME_='myFont'
 _FONT_STYLE_='simsun.ttc'
-pdfmetrics.registerFont(TTFont(_FONT_NAME_,_FONT_STYLE_))
+pdfmetrics.registerFont(TTFont(_FONT_NAME_,path+'/'+_FONT_STYLE_))
 
 class xml2pdf:
     def __init__(self,image_path,xml_path,pdf_path):
@@ -57,12 +59,12 @@ class xml2pdf:
 
 
     def init_text_object(self, draw_block, canva):
-        deviation=draw_block.char_size*0.2  #误差
+        deviation=0#draw_block.char_size*0.2  #误差
         text_obj = canva.beginText()
         text_obj.setFont(_FONT_NAME_, draw_block.char_size)
-        text_obj.setHorizScale(
-            100 * (draw_block.last_point+deviation - draw_block[0].point.left) / canva.stringWidth(
-                draw_block.char_line, _FONT_NAME_, draw_block.char_size))
+        strWidth=canva.stringWidth(draw_block.char_line, _FONT_NAME_, draw_block.char_size)
+        if(0!=strWidth):
+             text_obj.setHorizScale(100 * (draw_block.last_point+deviation - draw_block[0].point.left) / strWidth)
         text_obj.setTextOrigin(draw_block.begin_point.left-deviation, self.page_height - draw_block.begin_point.bottom)
         text_obj.textLine(draw_block.char_line)
         self.log_info("""
@@ -82,7 +84,7 @@ class xml2pdf:
     #错误信息记录
     def log_error(self,msg):
         logger=logging.getLogger(__name__)
-        logger.error(msg)
+        logger.error(msg,exc_info=1)
         print(define.status_error)
 
 #log.setup_logging()
@@ -110,9 +112,19 @@ if __name__=='__main__':
     image_path=sys.argv[1]
     xml_path=sys.argv[2]
     pdf_path = sys.argv[3]
-    if (check_file_exit(image_path) and check_file_exit(xml_path)):
-       result=xml2pdf(image_path,xml_path,pdf_path).xml2pdf()
-       print(result)
+    log.setup_logging()
+    #参数检查，空的xml直接返回
+    flag = True
+    try:
+        ET.parse(xml_path).getroot()
+    except ET.ParseError as e:
+        print(define.status_success)
+        logger = logging.getLogger(__name__)
+        logger.error("无效的xml文件"+xml_path)
+        flag = False
+    if (check_file_exit(image_path) and check_file_exit(xml_path) and flag):
+           result=xml2pdf(image_path,xml_path,pdf_path).xml2pdf()
+           print(result)
 
 
 
