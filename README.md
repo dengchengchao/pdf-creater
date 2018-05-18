@@ -1,4 +1,4 @@
-# pdf-create
+# pdf-creater
 xml2pdf是一个用于处理ocr结果的[双层pdf](https://baike.baidu.com/item/%E5%8F%8C%E5%B1%82pdf/6554147?fr=aladdin)生成器。
 xml2pdf目前支持两种ocr转换：
 - 百度ocr生成的xml文件
