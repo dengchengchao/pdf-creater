@@ -42,8 +42,9 @@ class pdf_parser:
                 for node in nodes:          #char
                     text_point=self.get_point(node)
                     text=self.get_charRec_text(node)
-                    xmler=pdf_char(text_point,text,max(text_point.bottom-text_point.top,text_point.right-text_point.left))
-                    line_pdf_list.append(xmler)
+                    if(text!=None):
+                        xmler=pdf_char(text_point,text,max(text_point.bottom-text_point.top,text_point.right-text_point.left))
+                        line_pdf_list.append(xmler)
             self.xml_list.append(line_pdf_list)
 
 
@@ -60,6 +61,9 @@ class pdf_parser:
 
     def get_charRec_text(self,father_node):
         if father_node!=None:
+            #xml文件有时候会没有这个节点，添加判断
+            if father_node.text==None:
+                return None
            return father_node.text.strip()
 
 
