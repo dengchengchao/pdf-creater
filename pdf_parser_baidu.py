@@ -64,7 +64,7 @@ class pdf_parser:
             #xml文件有时候会没有这个节点，添加判断
             if father_node.text==None:
                 return None
-           return father_node.text.strip()
+            return father_node.text.strip()
 
 
 
